@@ -103,27 +103,19 @@ function animate() {
   requestAnimationFrame(animate)
 
   const isMobile = window.innerWidth < 768
-  const scrollPos = window.scrollY * 0.05
   
+  // Constant rotation for energy
+  group.rotation.y += 0.003
+  group.rotation.z += 0.001
+
   // Dynamic scaling for mobile
   group.scale.setScalar(isMobile ? 0.6 : 1)
   particles.scale.setScalar(isMobile ? 0.8 : 1)
 
-  // Smooth movement based on scroll + mouse
-  group.rotation.y += 0.002 + mouseX * 0.005
-  group.rotation.x = (mouseY * 0.005) + (scrollPos * 0.01)
-
-  // Animate particles
-  particles.rotation.y += 0.001
-  particles.position.y = scrollPos * 0.1
-
-  // Animate social objects
-  instaObj.rotation.x += 0.01
-  instaObj.rotation.y += 0.01
-  githubObj.rotation.x += 0.01
-  githubObj.rotation.z += 0.01
-  linkedinObj.rotation.y += 0.01
-  linkedinObj.rotation.z += 0.01
+  // Social objects internal rotation
+  instaObj.rotation.x += 0.02
+  githubObj.rotation.y += 0.02
+  linkedinObj.rotation.z += 0.02
 
   renderer.render(scene, camera)
 }
@@ -156,74 +148,103 @@ if (contactForm) {
     }, 1500)
   })
 }
-// Hero reveal
-GSAP.from('.hero-content h1', {
-  y: 100,
-  opacity: 0,
-  duration: 1.2,
-  ease: 'power4.out'
+
+// --- Scroll Linked 3D Parallax ---
+GSAP.to(group.position, {
+  scrollTrigger: {
+    trigger: 'body',
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: 1
+  },
+  z: 10,
+  y: -5
 })
 
-GSAP.from('.hero-content h2, .hero-content p, .hero-content .cta-group', {
-  y: 50,
+GSAP.to(particles.rotation, {
+  scrollTrigger: {
+    trigger: 'body',
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: 2
+  },
+  x: 1,
+  y: 1
+})
+
+// --- GSAP Animations ---
+// Hero reveal
+const heroTl = GSAP.timeline()
+heroTl.from('.hero-content h1', {
+  y: 100,
+  opacity: 0,
+  duration: 1.5,
+  ease: 'expo.out'
+})
+.from('.neon-accent', {
+  x: -100,
   opacity: 0,
   duration: 1,
+  ease: 'power4.out'
+}, '-=1')
+.from('.subheading', {
+  opacity: 0,
+  letterSpacing: '0px',
+  duration: 1.5,
+  ease: 'power2.out'
+}, '-=0.5')
+.from('.cta-group .btn', {
+  scale: 0,
+  opacity: 0,
   stagger: 0.2,
-  delay: 0.5,
-  ease: 'power3.out'
-})
+  duration: 0.8,
+  ease: 'back.out(1.7)'
+}, '-=1')
 
 // Section scroll animations
 const sections = document.querySelectorAll('.section')
 sections.forEach((section, index) => {
   const isEven = index % 2 === 0
-  const title = section.querySelector('.section-title')
-  const cards = section.querySelectorAll('.glass-card, .project-card, .timeline-item')
-  const listItems = section.querySelectorAll('li')
   
-  // Title animation
-  GSAP.from(title, {
-    scrollTrigger: {
-      trigger: title,
-      start: 'top 85%',
-      toggleActions: 'play none none reverse'
-    },
-    x: isEven ? -50 : 50,
-    opacity: 0,
-    duration: 1,
-    ease: 'power3.out'
-  })
-
-  // Cards animation (Staggered slide-in)
-  GSAP.from(cards, {
+  // Only animate the top-level containers to avoid conflicts
+  const revealElements = section.querySelectorAll('.section-title, .glass-card, .project-card, .timeline-item')
+  
+  GSAP.from(revealElements, {
     scrollTrigger: {
       trigger: section,
-      start: 'top 90%', // Trigger much earlier to ensure visibility
-      toggleActions: 'play none none reverse'
+      start: 'top 92%', // Trigger very early
+      toggleActions: 'play none none none' // Don't reverse so they stay visible
     },
-    y: 80,
-    x: isEven ? -40 : 40,
+    y: 50,
     opacity: 0,
-    duration: 1,
-    stagger: 0.15,
-    ease: 'power3.out'
+    duration: 0.8,
+    stagger: 0.2,
+    ease: 'power2.out',
+    onComplete: () => {
+      // Ensure visibility is forced at the end
+      GSAP.set(revealElements, { opacity: 1, visibility: 'visible' })
+    }
   })
 
-  // List items animation (Skills)
+  // Staggered Skill items (only in skills section)
+  const listItems = section.querySelectorAll('li')
   if (listItems.length > 0) {
     GSAP.from(listItems, {
       scrollTrigger: {
         trigger: section,
         start: 'top 85%',
       },
-      scale: 0.8,
+      scale: 0.9,
       opacity: 0,
-      duration: 0.4,
-      stagger: 0.03,
-      ease: 'back.out(1.2)'
+      duration: 0.5,
+      stagger: 0.05,
+      ease: 'power1.out'
     })
   }
 })
+
+// Refresh ScrollTrigger to ensure correct positions
+ScrollTrigger.refresh()
 
 // Special parallax for project images
 GSAP.utils.toArray('.project-img img').forEach(img => {
@@ -234,17 +255,18 @@ GSAP.utils.toArray('.project-img img').forEach(img => {
       start: 'top bottom',
       end: 'bottom top'
     },
-    scale: 1.2,
+    scale: 1.3,
+    y: -30,
     ease: 'none'
   })
 })
 
-// Social links floating animation (CSS/GSAP)
+// Social links floating animation
 const socialItems = document.querySelectorAll('.social-item')
 socialItems.forEach((item, index) => {
   GSAP.to(item, {
-    y: 15,
-    duration: 1.5 + index * 0.3,
+    y: 20,
+    duration: 1.2 + index * 0.2,
     repeat: -1,
     yoyo: true,
     ease: 'sine.inOut'
