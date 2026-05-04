@@ -102,13 +102,16 @@ window.addEventListener('mousemove', (e) => {
 function animate() {
   requestAnimationFrame(animate)
 
-  // Rotate group based on mouse
+  // Smooth movement based on scroll
+  const scrollPos = window.scrollY * 0.05
+  
+  // Rotate group based on mouse + scroll parallax
   group.rotation.y += 0.002 + mouseX * 0.005
-  group.rotation.x += 0.002 + mouseY * 0.005
+  group.rotation.x = (mouseY * 0.005) + (scrollPos * 0.01)
 
-  // Animate particles
+  // Animate particles with slight scroll influence
   particles.rotation.y += 0.001
-  particles.rotation.x += 0.0005
+  particles.position.y = scrollPos * 0.1
 
   // Animate social objects
   instaObj.rotation.x += 0.01
@@ -149,66 +152,63 @@ if (contactForm) {
     }, 1500)
   })
 }
-
 // Hero reveal
-GSAP.from('.hero-content > *', {
-  y: 50,
+GSAP.from('.hero-content h1', {
+  y: 100,
   opacity: 0,
-  duration: 1.5,
-  stagger: 0.2,
+  duration: 1.2,
   ease: 'power4.out'
 })
 
-// Section title reveals
+GSAP.from('.hero-content h2, .hero-content p, .hero-content .cta-group', {
+  y: 50,
+  opacity: 0,
+  duration: 1,
+  stagger: 0.2,
+  delay: 0.5,
+  ease: 'power3.out'
+})
+
+// Section scroll animations
 const sections = document.querySelectorAll('.section')
 sections.forEach(section => {
-  const title = section.querySelector('.section-title')
-  if (title) {
-    GSAP.from(title, {
-      scrollTrigger: {
-        trigger: title,
-        start: 'top 80%',
-      },
-      y: 30,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out'
-    })
-  }
-
-  const cards = section.querySelectorAll('.glass-card')
-  GSAP.from(cards, {
+  const elements = section.querySelectorAll('.glass-card, .section-title, .about-text p, .project-card')
+  
+  GSAP.from(elements, {
     scrollTrigger: {
       trigger: section,
-      start: 'top 70%',
+      start: 'top 80%',
+      end: 'bottom 20%',
+      toggleActions: 'play none none reverse'
     },
-    y: 50,
+    y: 60,
     opacity: 0,
     duration: 1,
-    stagger: 0.1,
-    ease: 'power3.out'
+    stagger: 0.15,
+    ease: 'power2.out'
   })
 })
 
-// AgroSense Visualization (Simple Canvas Animation)
-const agrosenseViz = document.querySelector('#agrosense-viz')
-if (agrosenseViz) {
-  // We can add a specialized 3D scene here if needed
-  agrosenseViz.innerHTML = '<div class="viz-overlay">AGRICULTURAL AI INTERFACE ACTIVE</div>'
-  GSAP.to('.viz-overlay', {
-    opacity: 0.5,
-    repeat: -1,
-    yoyo: true,
-    duration: 2
+// Special parallax for project images
+GSAP.utils.toArray('.project-img img').forEach(img => {
+  GSAP.to(img, {
+    scrollTrigger: {
+      trigger: img,
+      scrub: true,
+      start: 'top bottom',
+      end: 'bottom top'
+    },
+    scale: 1.2,
+    ease: 'none'
   })
-}
+})
 
 // Social links floating animation (CSS/GSAP)
 const socialItems = document.querySelectorAll('.social-item')
 socialItems.forEach((item, index) => {
   GSAP.to(item, {
-    y: 10,
-    duration: 2 + index * 0.5,
+    y: 15,
+    duration: 1.5 + index * 0.3,
     repeat: -1,
     yoyo: true,
     ease: 'sine.inOut'
