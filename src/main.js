@@ -198,15 +198,15 @@ sections.forEach((section, index) => {
   GSAP.from(cards, {
     scrollTrigger: {
       trigger: section,
-      start: 'top 75%',
+      start: 'top 90%', // Trigger much earlier to ensure visibility
       toggleActions: 'play none none reverse'
     },
-    y: 100,
-    x: isEven ? -30 : 30,
+    y: 80,
+    x: isEven ? -40 : 40,
     opacity: 0,
-    duration: 1.2,
-    stagger: 0.2,
-    ease: 'power4.out'
+    duration: 1,
+    stagger: 0.15,
+    ease: 'power3.out'
   })
 
   // List items animation (Skills)
@@ -214,13 +214,13 @@ sections.forEach((section, index) => {
     GSAP.from(listItems, {
       scrollTrigger: {
         trigger: section,
-        start: 'top 70%',
+        start: 'top 85%',
       },
-      scale: 0.5,
+      scale: 0.8,
       opacity: 0,
-      duration: 0.5,
-      stagger: 0.05,
-      ease: 'back.out(1.7)'
+      duration: 0.4,
+      stagger: 0.03,
+      ease: 'back.out(1.2)'
     })
   }
 })

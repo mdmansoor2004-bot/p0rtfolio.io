@@ -396,10 +396,37 @@ h1, h2, h3, h4 {
   border: 1px solid var(--glass-border);
 }
 
-.projects-secondary {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+/* Experience Timeline */
+.timeline {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.timeline-item {
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.timeline-item h3 {
+  color: var(--accent-blue);
+  margin-bottom: 0.5rem;
+}
+
+.timeline-item .date {
+  color: var(--accent-cyan);
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Contact Section Visibility Fix */
+.contact-form {
+  opacity: 1 !important; /* Ensure it's visible by default */
+}
+
+.social-item {
+  opacity: 1 !important;
 }
 
 /* Contact Section */
