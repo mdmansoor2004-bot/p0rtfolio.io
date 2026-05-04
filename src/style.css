@@ -53,18 +53,20 @@ body {
 /* Glassmorphism Components */
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(8px); /* Reduced from 12px for performance */
+  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
-  padding: 2rem;
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-  will-change: transform, backdrop-filter; /* Optimize for animations */
+  padding: 2.5rem;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform, opacity, backdrop-filter;
 }
 
 .glass-card:hover {
-  border-color: rgba(0, 242, 255, 0.3);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transform: translateY(-10px) scale(1.02);
+  border-color: var(--accent-blue);
+  box-shadow: 0 20px 40px rgba(0, 242, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* Typography */
@@ -513,9 +515,13 @@ input:focus, textarea:focus {
 
 /* Responsive */
 @media (max-width: 968px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+
   .about-grid, .project-featured, .contact-grid {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 2rem;
   }
   
   .projects-secondary {
@@ -527,6 +533,30 @@ input:focus, textarea:focus {
   }
   
   .section {
-    padding: 5rem 0;
+    padding: 4rem 0;
+  }
+
+  .hero-content h1 {
+    font-size: 3rem;
+  }
+
+  .project-img {
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .cta-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
   }
 }

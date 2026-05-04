@@ -102,14 +102,18 @@ window.addEventListener('mousemove', (e) => {
 function animate() {
   requestAnimationFrame(animate)
 
-  // Smooth movement based on scroll
+  const isMobile = window.innerWidth < 768
   const scrollPos = window.scrollY * 0.05
   
-  // Rotate group based on mouse + scroll parallax
+  // Dynamic scaling for mobile
+  group.scale.setScalar(isMobile ? 0.6 : 1)
+  particles.scale.setScalar(isMobile ? 0.8 : 1)
+
+  // Smooth movement based on scroll + mouse
   group.rotation.y += 0.002 + mouseX * 0.005
   group.rotation.x = (mouseY * 0.005) + (scrollPos * 0.01)
 
-  // Animate particles with slight scroll influence
+  // Animate particles
   particles.rotation.y += 0.001
   particles.position.y = scrollPos * 0.1
 
@@ -171,22 +175,54 @@ GSAP.from('.hero-content h2, .hero-content p, .hero-content .cta-group', {
 
 // Section scroll animations
 const sections = document.querySelectorAll('.section')
-sections.forEach(section => {
-  const elements = section.querySelectorAll('.glass-card, .section-title, .about-text p, .project-card')
+sections.forEach((section, index) => {
+  const isEven = index % 2 === 0
+  const title = section.querySelector('.section-title')
+  const cards = section.querySelectorAll('.glass-card, .project-card, .timeline-item')
+  const listItems = section.querySelectorAll('li')
   
-  GSAP.from(elements, {
+  // Title animation
+  GSAP.from(title, {
     scrollTrigger: {
-      trigger: section,
-      start: 'top 80%',
-      end: 'bottom 20%',
+      trigger: title,
+      start: 'top 85%',
       toggleActions: 'play none none reverse'
     },
-    y: 60,
+    x: isEven ? -50 : 50,
     opacity: 0,
     duration: 1,
-    stagger: 0.15,
-    ease: 'power2.out'
+    ease: 'power3.out'
   })
+
+  // Cards animation (Staggered slide-in)
+  GSAP.from(cards, {
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 75%',
+      toggleActions: 'play none none reverse'
+    },
+    y: 100,
+    x: isEven ? -30 : 30,
+    opacity: 0,
+    duration: 1.2,
+    stagger: 0.2,
+    ease: 'power4.out'
+  })
+
+  // List items animation (Skills)
+  if (listItems.length > 0) {
+    GSAP.from(listItems, {
+      scrollTrigger: {
+        trigger: section,
+        start: 'top 70%',
+      },
+      scale: 0.5,
+      opacity: 0,
+      duration: 0.5,
+      stagger: 0.05,
+      ease: 'back.out(1.7)'
+    })
+  }
 })
 
 // Special parallax for project images
