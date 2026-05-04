@@ -53,12 +53,13 @@ body {
 /* Glassmorphism Components */
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px); /* Reduced from 12px for performance */
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   padding: 2rem;
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform, backdrop-filter; /* Optimize for animations */
 }
 
 .glass-card:hover {
@@ -93,7 +94,7 @@ h1, h2, h3, h4 {
   text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75),
     -0.025em -0.05em 0 rgba(0, 255, 0, 0.75),
     0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
-  animation: glitch 500ms infinite;
+  animation: glitch 1000ms infinite; /* Slower animation for performance */
 }
 
 @keyframes glitch {

@@ -26,12 +26,12 @@ const renderer = new THREE.WebGLRenderer({
   alpha: true
 })
 
-renderer.setPixelRatio(window.devicePixelRatio)
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setSize(window.innerWidth, window.innerHeight)
 camera.position.setZ(30)
 
 // --- Particles Background ---
-const particlesCount = 2000
+const particlesCount = 1000 // Reduced from 2000 for performance
 const positions = new Float32Array(particlesCount * 3)
 for (let i = 0; i < particlesCount * 3; i++) {
   positions[i] = (Math.random() - 0.5) * 100
@@ -55,7 +55,7 @@ scene.add(particles)
 const group = new THREE.Group()
 scene.add(group)
 
-const torusKnotGeometry = new THREE.TorusKnotGeometry(10, 3, 100, 16)
+const torusKnotGeometry = new THREE.TorusKnotGeometry(10, 3, 60, 12) // Simplified geometry
 const torusKnotMaterial = new THREE.MeshPhongMaterial({
   color: 0xbc13fe,
   wireframe: true,
@@ -67,11 +67,11 @@ group.add(torusKnot)
 
 // Floating Social Logos (Simplified as 3D Objects)
 const createSocialObject = (color, x, y, z) => {
-  const geo = new THREE.IcosahedronGeometry(1.5, 0)
+  const geo = new THREE.IcosahedronGeometry(1.5, 0) // Already low poly
   const mat = new THREE.MeshStandardMaterial({ 
     color: color, 
     emissive: color,
-    emissiveIntensity: 2,
+    emissiveIntensity: 1, // Reduced intensity
     wireframe: true 
   })
   const mesh = new THREE.Mesh(geo, mat)
@@ -127,6 +127,7 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
   renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
 // --- GSAP Animations ---
