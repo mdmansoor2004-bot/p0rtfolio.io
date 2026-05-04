@@ -1,0 +1,215 @@
+import './style.css'
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import GSAP from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Lenis from 'lenis'
+
+// Initialize GSAP
+GSAP.registerPlugin(ScrollTrigger)
+
+// Initialize Lenis for smooth scroll
+const lenis = new Lenis()
+lenis.on('scroll', ScrollTrigger.update)
+GSAP.ticker.add((time) => {
+  lenis.raf(time * 1000)
+})
+GSAP.ticker.lagSmoothing(0)
+
+// --- Three.js Setup ---
+const canvas = document.querySelector('#bg-canvas')
+const scene = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+const renderer = new THREE.WebGLRenderer({
+  canvas: canvas,
+  antialias: true,
+  alpha: true
+})
+
+renderer.setPixelRatio(window.devicePixelRatio)
+renderer.setSize(window.innerWidth, window.innerHeight)
+camera.position.setZ(30)
+
+// --- Particles Background ---
+const particlesCount = 2000
+const positions = new Float32Array(particlesCount * 3)
+for (let i = 0; i < particlesCount * 3; i++) {
+  positions[i] = (Math.random() - 0.5) * 100
+}
+
+const particlesGeometry = new THREE.BufferGeometry()
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+
+const particlesMaterial = new THREE.PointsMaterial({
+  size: 0.2,
+  color: 0x00f2ff,
+  transparent: true,
+  opacity: 0.8,
+  blending: THREE.AdditiveBlending
+})
+
+const particles = new THREE.Points(particlesGeometry, particlesMaterial)
+scene.add(particles)
+
+// --- 3D Geometric Accents ---
+const group = new THREE.Group()
+scene.add(group)
+
+const torusKnotGeometry = new THREE.TorusKnotGeometry(10, 3, 100, 16)
+const torusKnotMaterial = new THREE.MeshPhongMaterial({
+  color: 0xbc13fe,
+  wireframe: true,
+  transparent: true,
+  opacity: 0.1
+})
+const torusKnot = new THREE.Mesh(torusKnotGeometry, torusKnotMaterial)
+group.add(torusKnot)
+
+// Floating Social Logos (Simplified as 3D Objects)
+const createSocialObject = (color, x, y, z) => {
+  const geo = new THREE.IcosahedronGeometry(1.5, 0)
+  const mat = new THREE.MeshStandardMaterial({ 
+    color: color, 
+    emissive: color,
+    emissiveIntensity: 2,
+    wireframe: true 
+  })
+  const mesh = new THREE.Mesh(geo, mat)
+  mesh.position.set(x, y, z)
+  group.add(mesh)
+  return mesh
+}
+
+const instaObj = createSocialObject(0xff0066, 15, 10, -10)
+const githubObj = createSocialObject(0xffffff, -15, -10, -5)
+const linkedinObj = createSocialObject(0x0077b5, 10, -15, -8)
+
+// Lights
+const pointLight = new THREE.PointLight(0xffffff)
+pointLight.position.set(5, 5, 5)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+scene.add(pointLight, ambientLight)
+
+// --- Mouse Interaction ---
+let mouseX = 0
+let mouseY = 0
+window.addEventListener('mousemove', (e) => {
+  mouseX = (e.clientX / window.innerWidth - 0.5) * 2
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2
+})
+
+// --- Animation Loop ---
+function animate() {
+  requestAnimationFrame(animate)
+
+  // Rotate group based on mouse
+  group.rotation.y += 0.002 + mouseX * 0.005
+  group.rotation.x += 0.002 + mouseY * 0.005
+
+  // Animate particles
+  particles.rotation.y += 0.001
+  particles.rotation.x += 0.0005
+
+  // Animate social objects
+  instaObj.rotation.x += 0.01
+  instaObj.rotation.y += 0.01
+  githubObj.rotation.x += 0.01
+  githubObj.rotation.z += 0.01
+  linkedinObj.rotation.y += 0.01
+  linkedinObj.rotation.z += 0.01
+
+  renderer.render(scene, camera)
+}
+animate()
+
+// --- Resize Handling ---
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
+})
+
+// --- GSAP Animations ---
+// Contact form handling
+const contactForm = document.querySelector('.contact-form form')
+if (contactForm) {
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const btn = contactForm.querySelector('button')
+    const originalText = btn.innerText
+    btn.innerText = 'Sending...'
+    btn.disabled = true
+    
+    setTimeout(() => {
+      alert('Thank you for your message, Mohammed Mansoor will get back to you soon!')
+      contactForm.reset()
+      btn.innerText = originalText
+      btn.disabled = false
+    }, 1500)
+  })
+}
+
+// Hero reveal
+GSAP.from('.hero-content > *', {
+  y: 50,
+  opacity: 0,
+  duration: 1.5,
+  stagger: 0.2,
+  ease: 'power4.out'
+})
+
+// Section title reveals
+const sections = document.querySelectorAll('.section')
+sections.forEach(section => {
+  const title = section.querySelector('.section-title')
+  if (title) {
+    GSAP.from(title, {
+      scrollTrigger: {
+        trigger: title,
+        start: 'top 80%',
+      },
+      y: 30,
+      opacity: 0,
+      duration: 1,
+      ease: 'power3.out'
+    })
+  }
+
+  const cards = section.querySelectorAll('.glass-card')
+  GSAP.from(cards, {
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 70%',
+    },
+    y: 50,
+    opacity: 0,
+    duration: 1,
+    stagger: 0.1,
+    ease: 'power3.out'
+  })
+})
+
+// AgroSense Visualization (Simple Canvas Animation)
+const agrosenseViz = document.querySelector('#agrosense-viz')
+if (agrosenseViz) {
+  // We can add a specialized 3D scene here if needed
+  agrosenseViz.innerHTML = '<div class="viz-overlay">AGRICULTURAL AI INTERFACE ACTIVE</div>'
+  GSAP.to('.viz-overlay', {
+    opacity: 0.5,
+    repeat: -1,
+    yoyo: true,
+    duration: 2
+  })
+}
+
+// Social links floating animation (CSS/GSAP)
+const socialItems = document.querySelectorAll('.social-item')
+socialItems.forEach((item, index) => {
+  GSAP.to(item, {
+    y: 10,
+    duration: 2 + index * 0.5,
+    repeat: -1,
+    yoyo: true,
+    ease: 'sine.inOut'
+  })
+})
