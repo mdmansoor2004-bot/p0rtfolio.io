@@ -1,11 +1,11 @@
 :root {
-  --bg-color: #050505;
-  --text-color: #e0e0e0;
+  --bg-color: #030303;
+  --text-color: #ffffff;
   --accent-blue: #00f2ff;
   --accent-purple: #bc13fe;
   --accent-cyan: #00ffcc;
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(20, 20, 20, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.15);
   --neon-shadow: 0 0 10px var(--accent-blue), 0 0 20px rgba(0, 242, 255, 0.2);
   --font-main: 'Inter', sans-serif;
   --font-heading: 'Outfit', sans-serif;
@@ -59,7 +59,7 @@ body {
   border-radius: 20px;
   padding: 2.5rem;
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-  will-change: transform, opacity, backdrop-filter;
+  will-change: transform, opacity; /* Removed backdrop-filter from will-change to fix blur bugs */
 }
 
 .glass-card:hover {
@@ -281,7 +281,7 @@ h1, h2, h3, h4 {
 .about-text p {
   margin-bottom: 1.5rem;
   font-size: 1.1rem;
-  color: #bbb;
+  color: #efefef; /* Brighter text */
 }
 
 .about-info {
